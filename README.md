@@ -24,7 +24,7 @@ The full URL looks like *http://dyndns.example.com/?hostname=myhost.example.com*
 
 All the user configuration stuff like allowed hostnames or post processing commands is configured via user providers.
 
-The default user provider reads the user configuration from a XML file (See the *XML User Provider* wiki page).
+The default user provider reads the user configuration from a XML file (See the [XML User Provider](XML-User-Provider) wiki page).
 
 ## config.json
 
