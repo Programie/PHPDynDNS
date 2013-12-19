@@ -19,6 +19,7 @@ The full URL looks like *http://dyndns.example.com/?hostname=myhost.example.com*
    * Clone this repository to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
    * Create a file *config.json* in the data directory (See the *config.json* wiki page)
    * Configure the user provider you want to use (e.g. XML or MySQL)
+   * Configure your router to automatically do a request to the URL of your DynDNS service after reconnect (Or create a cronjob with curl/wget).
 
 ## User Configuration
 
