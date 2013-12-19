@@ -24,7 +24,7 @@ The full URL looks like *http://dyndns.example.com/?hostname=myhost.example.com*
 
 All the user configuration stuff like allowed hostnames or post processing commands is configured via user providers.
 
-The default user provider reads the user configuration from a XML file (See the *XML User Provider* section bellow).
+The default user provider reads the user configuration from a XML file (See the *XML User Provider* wiki page).
 
 ## config.json
 
@@ -46,25 +46,3 @@ The file has the following structure:
   }
 }
 ```
-
-## XML User Provider
-
-The XML User Provider is the current default user provider. It reads the user configuration from a XML file.
-
-The XML file should be in the following format:
-
-```xml
-<?xml version="1.0" ?>
-<users>
-  <user name="name-of-the-user" password="password-of-the-user">
-    <host zone="example.com">host1.example.com</host>
-    <host zone="another.example.com">myhost.another.example.com</host>
-    <postprocess>/opt/some-command-to-execute-after-successfull-update.sh</postprocess>
-  </user>
-  <user name="another-user" password="password-of-the-user">
-    <host zone="example.com">anotheruser.example.com</host>
-  </user>
-</users>
-```
-
-The default location of this XML file is *data/users.xml*. You can change the location in the config.json file.
