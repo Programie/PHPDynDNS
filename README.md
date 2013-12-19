@@ -32,36 +32,39 @@ The config.json file (Stored in the data directory) is the main configuration fi
 
 All configuration stuff (Including user provider configuration) is done in this file.
 
-### Structure
+The file has the following structure:
 
+```json
+{
+  "userProvider" : "xml",
+  "userProviderConfig" :
   {
-    "userProvider" : "xml",// e.g. xml, mysql, json, ...
-    "userProviderConfig" :// User provider specific configuration
+    "xml" :
     {
-      "xml" :
-      {
-        "filename" : "data/users.xml"// Path to the XML file used by the XML User Provider
-      }
+      "filename" : "data/users.xml"
     }
   }
+}
+```
 
 ## XML User Provider
 
 The XML User Provider is the current default user provider. It reads the user configuration from a XML file.
 
-The XML file must have the following structure:
+The XML file should be in the following format:
 
-  The XML file should be in the following format:
-  <?xml version="1.0" ?>
-  <users>
-    <user name="name-of-the-user" password="password-of-the-user">
-      <host zone="example.com">host1.example.com</host>
-      <host zone="another.example.com">myhost.another.example.com</host>
-      <postprocess>/opt/some-command-to-execute-after-successfull-update.sh</postprocess>
-    </user>
-    <user name="another-user" password="password-of-the-user">
-      <host zone="example.com">anotheruser.example.com</host>
-    </user>
-  </users>
+```xml
+<?xml version="1.0" ?>
+<users>
+  <user name="name-of-the-user" password="password-of-the-user">
+    <host zone="example.com">host1.example.com</host>
+    <host zone="another.example.com">myhost.another.example.com</host>
+    <postprocess>/opt/some-command-to-execute-after-successfull-update.sh</postprocess>
+  </user>
+  <user name="another-user" password="password-of-the-user">
+    <host zone="example.com">anotheruser.example.com</host>
+  </user>
+</users>
+```
 
 The default location of this XML file is *data/users.xml*. You can change the location in the config.json file.
