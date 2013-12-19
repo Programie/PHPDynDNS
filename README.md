@@ -17,32 +17,11 @@ The full URL looks like *http://dyndns.example.com/?hostname=myhost.example.com*
 ## Installation
 
    * Clone this repository to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
-   * Create a file *config.json* in the data directory (See the *config.json* section bellow)
+   * Create a file *config.json* in the data directory (See the *config.json* wiki page)
    * Configure the user provider you want to use (e.g. XML or MySQL)
 
 ## User Configuration
 
 All the user configuration stuff like allowed hostnames or post processing commands is configured via user providers.
 
-The default user provider reads the user configuration from a XML file (See the [XML User Provider](XML-User-Provider) wiki page).
-
-## config.json
-
-The config.json file (Stored in the data directory) is the main configuration file of PHP DynDNS.
-
-All configuration stuff (Including user provider configuration) is done in this file.
-
-The file has the following structure:
-
-```json
-{
-  "userProvider" : "xml",
-  "userProviderConfig" :
-  {
-    "xml" :
-    {
-      "filename" : "data/users.xml"
-    }
-  }
-}
-```
+The default user provider reads the user configuration from a XML file (See the *XML User Provider* wiki page).
