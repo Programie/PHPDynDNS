@@ -8,6 +8,8 @@ Authorization is done using HTTP Basic Auth or using the *username* and *passwor
 
 The full URL looks like *http://dyndns.example.com/?hostname=myhost.example.com* (HTTP Basic Auth) or *http://dyndns.example.com/?hostname=myhost.example.com&username=myuser&password=mypassword* (URL variable auth).
 
+You may also specify the IP address using a GET variable (ipaddress=<address>). Example: *http://dyndns.example.com/?hostname=myhost.example.com&ipaddress=90.123.50.43*
+
 ## Requirements
 
    * A domain
