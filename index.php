@@ -25,7 +25,7 @@ $config = json_decode(file_get_contents($configFile));
 $username = $_SERVER["PHP_AUTH_USER"] ?: $_GET["username"];
 $password = $_SERVER["PHP_AUTH_PW"] ?: $_GET["password"];
 $hostname = $_GET["hostname"];
-$ipAddress = $_GET["ipaddress"] ?: $_SERVER["REMOTE_ADDR"];
+$ipAddresses = explode(",", $_GET["ipaddresses"] ?: $_SERVER["REMOTE_ADDR"]);
 
 // Check whether the configured user provider exists
 $userProviderFile = __DIR__ . "/user-providers/" . $config->userProvider . ".class.php";
@@ -41,6 +41,7 @@ require_once $userProviderFile;
 
 $userProviderClass = "UserProvider_" . $config->userProvider;
 
+/** @var $userProvider AbstractUserProvider */
 $userProvider = new $userProviderClass($config->userProviderConfig->{$config->userProvider});
 
 // Check whether the given username and password match to an account
@@ -60,20 +61,54 @@ if (!$hostname or !$userProvider->checkHost($username, $hostname))
 	exit;
 }
 
-// Check whether the given IP address is valid
-if (!$ipAddress or !filter_var($ipAddress, FILTER_VALIDATE_IP))
+// Build nsupdate commands
+$nsupdateCommands = array();
+$nsupdateCommands[] = "server localhost";
+$nsupdateCommands[] = "zone " . $userProvider->getZoneOfHost($username, $hostname);
+$nsupdateCommands[] = "update delete " . $hostname;
+
+// Check IP addresses and add update commands for each given IP address
+$firstIPv4Address = "";
+$firstIPv6Address = "";
+foreach ($ipAddresses as $index => $ipAddress)
+{
+	if (!$ipAddress or !filter_var($ipAddress, FILTER_VALIDATE_IP))
+	{
+		unset($ipAddress[$index]);
+	}
+
+	// Is IPv4 address?
+	if (preg_match("/^\d{1,3}(\.\d{1,3}){3,3}$/", $ipAddress))
+	{
+		$entryType = "A";
+
+		if (!$firstIPv4Address)
+		{
+			$firstIPv4Address = $ipAddress;
+		}
+	}
+	else
+	{
+		$entryType = "AAAA";
+
+		if (!$firstIPv6Address)
+		{
+			$firstIPv6Address = $ipAddress;
+		}
+	}
+
+	$nsupdateCommands[] = "update add " . $hostname . " 60 " . $entryType . " " . $ipAddress;
+}
+
+// Error if no valid IP address was given
+if (empty($ipAddresses))
 {
 	header("HTTP/1.1 400 Bad Request");
 	echo ERROR_INVALID_IP;
 	exit;
 }
 
-// Build nsupdate commands
-$nsupdateCommands = array();
-$nsupdateCommands[] = "server localhost";
-$nsupdateCommands[] = "zone " . $userProvider->getZoneOfHost($username, $hostname);
-$nsupdateCommands[] = "update delete " . $hostname;
-$nsupdateCommands[] = "update add " . $hostname . " 60 A " . $ipAddress;
+// Add "send" command
 $nsupdateCommands[] = "send";
 
 // Execute nsupdate
@@ -93,7 +128,8 @@ else
 		$commandLine = $postProcessCommand->command;
 		$commandLine = str_replace("%username%", $username, $commandLine);
 		$commandLine = str_replace("%hostname%", $hostname, $commandLine);
-		$commandLine = str_replace("%ipaddress%", $ipAddress, $commandLine);
+		$commandLine = str_replace("%ipv4address%", $firstIPv4Address, $commandLine);
+		$commandLine = str_replace("%ipv6address%", $firstIPv6Address, $commandLine);
 
 		if ($postProcessCommand->noWait)
 		{
@@ -103,5 +139,15 @@ else
 		exec($commandLine);
 	}
 
-	echo ERROR_OK . " " . $ipAddress;
+	echo ERROR_OK . " ";
+
+	// Add either the IPv4 or IPv6 address
+	if (preg_match("/^\d{1,3}(\.\d{1,3}){3,3}$/", $_SERVER["REMOTE_ADDR"]))
+	{
+		echo $firstIPv4Address;
+	}
+	else
+	{
+		echo $firstIPv6Address;
+	}
 }
