@@ -1,0 +1,23 @@
+{
+	"server" : "localhost",
+	"ttl" : 60,
+	"users" :
+	{
+		"myuser" :
+		{
+			"password" : "mypassword",
+			"hosts" :
+			{
+				"myhost.example.com" :
+				{
+					"zone" : "example.com"
+				},
+				"anotherhost.example.com" :
+				{
+					"zone" : "anotherhost.example.com"
+				}
+			},
+			"postprocess" : "nohup sudo /opt/some-script.sh %hostname% %ipaddress% %iptype%"
+		}
+	}
+}

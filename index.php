@@ -10,7 +10,7 @@ define("ERROR_DNSERROR", "dnserr");// DNS error encountered
 define("ERROR_INVALID_IP", "iperror");// IP address is invalid
 
 // Check whether the configuration file exists
-$configFile = __DIR__ . "/data/config.json";
+$configFile = __DIR__ . "/config.json";
 if (!file_exists($configFile))
 {
 	header("HTTP/1.1 500 Internal Server Error");
@@ -20,32 +20,16 @@ if (!file_exists($configFile))
 
 // Read configuration file
 $config = json_decode(file_get_contents($configFile));
+$users = $config->users;
 
 // Read user provided data
 $username = $_SERVER["PHP_AUTH_USER"] ?: $_GET["username"];
 $password = $_SERVER["PHP_AUTH_PW"] ?: $_GET["password"];
 $hostname = $_GET["hostname"];
-$ipAddresses = explode(",", $_GET["ipaddresses"] ?: $_SERVER["REMOTE_ADDR"]);
-
-// Check whether the configured user provider exists
-$userProviderFile = __DIR__ . "/user-providers/" . $config->userProvider . ".class.php";
-if (!file_exists($userProviderFile))
-{
-	header("HTTP/1.1 500 Internal Server Error");
-	echo "No such user provider: " . $config->userProvider;
-	exit;
-}
-
-// Create user provider instance
-require_once $userProviderFile;
-
-$userProviderClass = "UserProvider_" . $config->userProvider;
-
-/** @var $userProvider AbstractUserProvider */
-$userProvider = new $userProviderClass($config->userProviderConfig->{$config->userProvider});
+$ipAddress = $_GET["ipaddress"] ?: $_SERVER["REMOTE_ADDR"];
 
 // Check whether the given username and password match to an account
-if (!$userProvider->checkAuth($username, $password))
+if (!isset($users->{$username}) or $users->{$username}->password != $password)
 {
 	header("WWW-Authenticate: Basic realm=\"DynDNS Update\"");
 	header("HTTP/1.0 401 Unauthorized");
@@ -53,62 +37,40 @@ if (!$userProvider->checkAuth($username, $password))
 	exit;
 }
 
+$user = $users->{$username};
+
 // Check whether the given hostname is valid
-if (!$hostname or !$userProvider->checkHost($username, $hostname))
+if (!$hostname or !isset($user->hosts->{$hostname}))
 {
 	header("HTTP/1.1 400 Bad Request");
 	echo ERROR_INVALID_HOST;
 	exit;
 }
 
-// Build nsupdate commands
-$nsupdateCommands = array();
-$nsupdateCommands[] = "server localhost";
-$nsupdateCommands[] = "zone " . $userProvider->getZoneOfHost($username, $hostname);
-$nsupdateCommands[] = "update delete " . $hostname;
-
-// Check IP addresses and add update commands for each given IP address
-$firstIPv4Address = "";
-$firstIPv6Address = "";
-foreach ($ipAddresses as $index => $ipAddress)
-{
-	if (!$ipAddress or !filter_var($ipAddress, FILTER_VALIDATE_IP))
-	{
-		unset($ipAddress[$index]);
-	}
-
-	// Is IPv4 address?
-	if (preg_match("/^\d{1,3}(\.\d{1,3}){3,3}$/", $ipAddress))
-	{
-		$entryType = "A";
-
-		if (!$firstIPv4Address)
-		{
-			$firstIPv4Address = $ipAddress;
-		}
-	}
-	else
-	{
-		$entryType = "AAAA";
-
-		if (!$firstIPv6Address)
-		{
-			$firstIPv6Address = $ipAddress;
-		}
-	}
-
-	$nsupdateCommands[] = "update add " . $hostname . " 60 " . $entryType . " " . $ipAddress;
-}
-
-// Error if no valid IP address was given
-if (empty($ipAddresses))
+// Check whether the given IP address is valid
+if (!$ipAddress or !filter_var($ipAddress, FILTER_VALIDATE_IP))
 {
 	header("HTTP/1.1 400 Bad Request");
 	echo ERROR_INVALID_IP;
 	exit;
 }
 
-// Add "send" command
+// Is IPv4 address?
+if (preg_match("/^\d{1,3}(\.\d{1,3}){3,3}$/", $ipAddress))
+{
+	$entryType = "A";
+}
+else
+{
+	$entryType = "AAAA";
+}
+
+// Build nsupdate commands
+$nsupdateCommands = array();
+$nsupdateCommands[] = "server " . $config->server;
+$nsupdateCommands[] = "zone " .$user->hosts->{$hostname}->zone;
+$nsupdateCommands[] = "update delete " . $hostname . " " . $entryType;
+$nsupdateCommands[] = "update add " . $hostname . " " . $config->ttl . " " . $entryType . " " . $ipAddress;
 $nsupdateCommands[] = "send";
 
 // Execute nsupdate
@@ -121,33 +83,17 @@ if ($returnCode)
 }
 else
 {
-	// Run post process commands
-	$postProcessCommands = $userProvider->getPostProcessCommands($username);
-	foreach ($postProcessCommands as $postProcessCommand)
+	// Run post process command
+	if (isset($user->postprocess))
 	{
-		$commandLine = $postProcessCommand->command;
+		$commandLine = $user->postprocess;
 		$commandLine = str_replace("%username%", $username, $commandLine);
 		$commandLine = str_replace("%hostname%", $hostname, $commandLine);
-		$commandLine = str_replace("%ipv4address%", $firstIPv4Address, $commandLine);
-		$commandLine = str_replace("%ipv6address%", $firstIPv6Address, $commandLine);
-
-		if ($postProcessCommand->noWait)
-		{
-			$commandLine .= " > /dev/null 2>&1 &";
-		}
+		$commandLine = str_replace("%ipaddress%", $ipAddress, $commandLine);
+		$commandLine = str_replace("%iptype%", $entryType, $commandLine);
 
 		exec($commandLine);
 	}
 
-	echo ERROR_OK . " ";
-
-	// Add either the IPv4 or IPv6 address
-	if (preg_match("/^\d{1,3}(\.\d{1,3}){3,3}$/", $_SERVER["REMOTE_ADDR"]))
-	{
-		echo $firstIPv4Address;
-	}
-	else
-	{
-		echo $firstIPv6Address;
-	}
+	echo ERROR_OK . " " . $ipAddress;
 }
