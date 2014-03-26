@@ -90,7 +90,7 @@ else
 		$commandLine = str_replace("%username%", $username, $commandLine);
 		$commandLine = str_replace("%hostname%", $hostname, $commandLine);
 		$commandLine = str_replace("%ipaddress%", $ipAddress, $commandLine);
-		$commandLine = str_replace("%iptype%", $entryType, $commandLine);
+		$commandLine = str_replace("%entrytype%", $entryType, $commandLine);
 
 		exec($commandLine);
 	}
