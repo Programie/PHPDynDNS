@@ -21,10 +21,10 @@ PHP DynDNS also supports IPv6! To update both, the IPv4 and IPv6 address, just m
 ## Installation
 
    * Clone this repository to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
-   * Copy *config.sample.json* to *config.json* (See the *config.json* wiki page for details)
+   * Copy *config.sample.json* to *config.json*
    * Edit config.json to fit your needs
-   * Configure your router to automatically do a request to the URL of your DynDNS service after reconnect (Or create a cronjob with curl/wget).
+   * Configure your router to automatically request the URL of your DynDNS service after each reconnect (Or create a cronjob with curl/wget).
 
 ## Important
 
-   Make sure the config.json is not readable via HTTP! On Apache this is already done using the .htaccess file.
+   Make sure the config.json is not readable via HTTP! On Apache this is already done using the *.htaccess* file.
