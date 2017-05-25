@@ -22,6 +22,13 @@ if (!file_exists($configFile))
 $config = json_decode(file_get_contents($configFile));
 $users = $config->users;
 
+// Allow Icinga/Nagios to check this application
+if (preg_match("/^check_http/", $_SERVER["HTTP_USER_AGENT"]))
+{
+	echo "";
+	exit;
+}
+
 // Read user provided data
 $username = $_SERVER["PHP_AUTH_USER"] ?: $_GET["username"];
 $password = $_SERVER["PHP_AUTH_PW"] ?: $_GET["password"];
