@@ -25,7 +25,6 @@ $users = $config->users;
 // Allow Icinga/Nagios to check this application
 if (preg_match("/^check_http/", $_SERVER["HTTP_USER_AGENT"]))
 {
-	echo "";
 	exit;
 }
 
