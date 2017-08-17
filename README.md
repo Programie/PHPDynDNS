@@ -2,7 +2,7 @@
 
 ## Introduction
 
-PHP DynDNS is a very simple DynDNS service. It allows you to update your bind name server via a simple HTTP request.
+PHP DynDNS is a very simple DynDNS service. It allows you to update your DNS server via a simple HTTP request.
 
 Authorization is done using HTTP Basic Auth or using the *username* and *password* URL variables.
 
@@ -16,13 +16,14 @@ PHP DynDNS also supports IPv6! To update both, the IPv4 and IPv6 address, just m
 
    * A domain
    * A web server running PHP
-   * bind
+   * A DNS server (e.g. bind)
 
 ## Installation
 
    * Clone this repository to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
    * Copy *config.sample.json* to *config.json*
    * Edit config.json to fit your needs
+   * Configure your DNS server to allow update requests from the webserver (e.g. `allow-update { localhost; }` in bind)
    * Configure your router to automatically request the URL of your DynDNS service after each reconnect (Or create a cronjob with curl/wget).
 
 ## Important
