@@ -1,4 +1,10 @@
 <?php
+require_once __DIR__ . "/classes/Config.php";
+require_once __DIR__ . "/classes/ConfigException.php";
+require_once __DIR__ . "/classes/Host.php";
+require_once __DIR__ . "/classes/NSUpdate.php";
+require_once __DIR__ . "/classes/User.php";
+
 // Standard error codes (As used by dyn.com)
 define("ERROR_OK", "good");// The update was successful, and the hostname is now updated
 define("ERROR_BADAUTH", "badauth");// The username and password pair do not match a registered user
@@ -13,13 +19,19 @@ define("ERROR_INVALID_IP", "iperror");// IP address is invalid
 $configFile = __DIR__ . "/config.json";
 if (!file_exists($configFile)) {
     header("HTTP/1.1 500 Internal Server Error");
-    echo "System not configured!";
+    echo "Application not configured!";
     exit;
 }
 
-// Read configuration file
-$config = json_decode(file_get_contents($configFile));
-$users = $config->users;
+try {
+    $config = Config::fromFile($configFile);
+} catch (ConfigException $exception) {
+    error_log($exception);
+
+    header("HTTP/1.1 500 Internal Server Error");
+    echo "An error occurred while parsing configuration (see error log)!";
+    exit;
+}
 
 // Allow Icinga/Nagios to check this application
 if (preg_match("/^check_http/", $_SERVER["HTTP_USER_AGENT"])) {
@@ -27,23 +39,36 @@ if (preg_match("/^check_http/", $_SERVER["HTTP_USER_AGENT"])) {
 }
 
 // Read user provided data
-$username = $_SERVER["PHP_AUTH_USER"] ?: $_GET["username"];
-$password = $_SERVER["PHP_AUTH_PW"] ?: $_GET["password"];
-$hostname = $_GET["hostname"];
-$ipAddress = $_GET["ipaddress"] ?: $_SERVER["REMOTE_ADDR"];
+$username = $_GET["username"] ?? $_SERVER["PHP_AUTH_USER"] ?? null;
+$password = $_GET["password"] ?? $_SERVER["PHP_AUTH_PW"] ?? null;
+$hostname = $_GET["hostname"] ?? null;
+$ipAddress = $_GET["ipaddress"] ?? $_SERVER["REMOTE_ADDR"];
 
-// Check whether the given username and password match to an account
-if (!isset($users->{$username}) or $users->{$username}->password != $password) {
+if ($username === null or $password === null) {
     header("WWW-Authenticate: Basic realm=\"DynDNS Update\"");
     header("HTTP/1.0 401 Unauthorized");
     echo ERROR_BADAUTH;
     exit;
 }
 
-$user = $users->{$username};
+if ($hostname === null) {
+    header("HTTP/1.1 400 Bad Request");
+    echo ERROR_INVALID_HOST;
+    exit;
+}
 
-// Check whether the given hostname is valid
-if (!$hostname or !isset($user->hosts->{$hostname})) {
+$user = $config->getUser($username);
+
+if ($user === null or !$user->checkPassword($password)) {
+    header("WWW-Authenticate: Basic realm=\"DynDNS Update\"");
+    header("HTTP/1.0 401 Unauthorized");
+    echo ERROR_BADAUTH;
+    exit;
+}
+
+$host = $user->getHost($hostname);
+
+if ($host === null) {
     header("HTTP/1.1 400 Bad Request");
     echo ERROR_INVALID_HOST;
     exit;
@@ -63,31 +88,25 @@ if (preg_match("/^\d{1,3}(\.\d{1,3}){3,3}$/", $ipAddress)) {
     $entryType = "AAAA";
 }
 
-// Build nsupdate commands
-$nsupdateCommands = array();
-$nsupdateCommands[] = "server " . $config->server;
-$nsupdateCommands[] = "zone " . $user->hosts->{$hostname}->zone;
-$nsupdateCommands[] = "update delete " . $hostname . " " . $entryType;
-$nsupdateCommands[] = "update add " . $hostname . " " . $config->ttl . " " . $entryType . " " . $ipAddress;
-$nsupdateCommands[] = "send";
+$nsUpdate = new NSUpdate($config->server, $host->zone);
 
-// Execute nsupdate
-exec("echo \"" . implode("\n", $nsupdateCommands) . "\" | nsupdate", $output, $returnCode);
+$nsUpdate->delete($host->hostname, $entryType);
+$nsUpdate->add($host->hostname, $config->ttl, $entryType, $ipAddress);
 
-// Check whether nsupdate responded with an error
-if ($returnCode) {
+if (!$nsUpdate->send()) {
     echo ERROR_DNSERROR;
-} else {
-    // Run post process command
-    if (isset($user->postprocess)) {
-        $commandLine = $user->postprocess;
-        $commandLine = str_replace("%username%", $username, $commandLine);
-        $commandLine = str_replace("%hostname%", $hostname, $commandLine);
-        $commandLine = str_replace("%ipaddress%", $ipAddress, $commandLine);
-        $commandLine = str_replace("%entrytype%", $entryType, $commandLine);
-
-        exec($commandLine);
-    }
-
-    echo ERROR_OK . " " . $ipAddress;
+    exit;
 }
+
+// Run post process command (if configured)
+if (isset($user->postProcess)) {
+    $commandLine = $user->postProcess;
+    $commandLine = str_replace("%username%", $user->username, $commandLine);
+    $commandLine = str_replace("%hostname%", $host->hostname, $commandLine);
+    $commandLine = str_replace("%ipaddress%", $ipAddress, $commandLine);
+    $commandLine = str_replace("%entrytype%", $entryType, $commandLine);
+
+    exec($commandLine);
+}
+
+echo ERROR_OK . " " . $ipAddress;

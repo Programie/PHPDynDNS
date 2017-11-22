@@ -15,7 +15,7 @@ PHP DynDNS also supports IPv6! To update both, the IPv4 and IPv6 address, just m
 ## Requirements
 
    * A domain
-   * A web server running PHP
+   * A web server running PHP 7
    * A DNS server (e.g. bind)
 
 ## Installation
