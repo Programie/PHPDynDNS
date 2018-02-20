@@ -5,10 +5,12 @@ class Host
 {
     /**
      * @var string
+     * @required
      */
     public $hostname;
     /**
      * @var string
+     * @required
      */
     public $zone;
 }

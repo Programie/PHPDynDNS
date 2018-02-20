@@ -5,14 +5,16 @@ class Config
 {
     /**
      * @var string
+     * @required
      */
     public $server;
     /**
      * @var int
      */
-    public $ttl;
+    public $ttl = 60;
     /**
      * @var User[]
+     * @required
      */
     public $users = [];
 

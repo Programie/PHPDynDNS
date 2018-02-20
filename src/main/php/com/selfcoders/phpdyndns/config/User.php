@@ -5,14 +5,17 @@ class User
 {
     /**
      * @var string
+     * @required
      */
     public $username;
     /**
      * @var string
+     * @required
      */
     public $passwordHash;
     /**
      * @var Host[]
+     * @required
      */
     public $hosts = [];
     /**
