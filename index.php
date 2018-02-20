@@ -1,18 +1,9 @@
 <?php
 use com\selfcoders\phpdyndns\config\Config;
+use com\selfcoders\phpdyndns\ErrorCode;
 use com\selfcoders\phpdyndns\NSUpdate;
 
 require_once __DIR__ . "/vendor/autoload.php";
-
-// Standard error codes (As used by dyn.com)
-define("ERROR_OK", "good");// The update was successful, and the hostname is now updated
-define("ERROR_BADAUTH", "badauth");// The username and password pair do not match a registered user
-define("ERROR_NO_CHANGE", "nochg");// The update changed no settings
-define("ERROR_INVALID_HOST", "nohost");// The hostname specified does not exist in this user account
-define("ERROR_DNSERROR", "dnserr");// DNS error encountered
-
-// Custom error codes
-define("ERROR_INVALID_IP", "iperror");// IP address is invalid
 
 // Check whether the configuration file exists
 $configFile = __DIR__ . "/config.json";
@@ -52,13 +43,13 @@ $ipAddress = $_GET["ipaddress"] ?? $_SERVER["REMOTE_ADDR"];
 if ($username === null or $password === null) {
     header("WWW-Authenticate: Basic realm=\"DynDNS Update\"");
     header("HTTP/1.0 401 Unauthorized");
-    echo ERROR_BADAUTH;
+    echo ErrorCode::BADAUTH;
     exit;
 }
 
 if ($hostname === null) {
     header("HTTP/1.1 400 Bad Request");
-    echo ERROR_INVALID_HOST;
+    echo ErrorCode::INVALID_HOST;
     exit;
 }
 
@@ -67,7 +58,7 @@ $user = $config->getUser($username);
 if ($user === null or !$user->checkPassword($password)) {
     header("WWW-Authenticate: Basic realm=\"DynDNS Update\"");
     header("HTTP/1.0 401 Unauthorized");
-    echo ERROR_BADAUTH;
+    echo ErrorCode::BADAUTH;
     exit;
 }
 
@@ -75,14 +66,14 @@ $host = $user->getHost($hostname);
 
 if ($host === null) {
     header("HTTP/1.1 400 Bad Request");
-    echo ERROR_INVALID_HOST;
+    echo ErrorCode::INVALID_HOST;
     exit;
 }
 
 // Check whether the given IP address is valid
 if (!$ipAddress or !filter_var($ipAddress, FILTER_VALIDATE_IP)) {
     header("HTTP/1.1 400 Bad Request");
-    echo ERROR_INVALID_IP;
+    echo ErrorCode::INVALID_IP;
     exit;
 }
 
@@ -99,7 +90,7 @@ $nsUpdate->delete($host->hostname, $entryType);
 $nsUpdate->add($host->hostname, $config->ttl, $entryType, $ipAddress);
 
 if (!$nsUpdate->send()) {
-    echo ERROR_DNSERROR;
+    echo ErrorCode::DNSERROR;
     exit;
 }
 
@@ -114,4 +105,4 @@ if (isset($user->postProcess)) {
     exec($commandLine);
 }
 
-echo ERROR_OK . " " . $ipAddress;
+echo ErrorCode::OK . " " . $ipAddress;
