@@ -46,10 +46,7 @@ class NSUpdate
         $this->commands[] = sprintf("update add %s %d %s %s", $entry, $ttl, $type, $value);
     }
 
-    /**
-     * @return bool
-     */
-    public function send()
+    public function getAllCommands()
     {
         $allCommands = [];
 
@@ -60,7 +57,15 @@ class NSUpdate
 
         $allCommands[] = "send";
 
-        exec(sprintf("echo \"%s\" | nsupdate", implode("\n", $allCommands)), $output, $exitCode);
+        return $allCommands;
+    }
+
+    /**
+     * @return bool
+     */
+    public function send()
+    {
+        exec(sprintf("echo \"%s\" | nsupdate", implode("\n", $this->getAllCommands())), $output, $exitCode);
 
         $this->commands = [];
 
