@@ -49,6 +49,14 @@ class User
     }
 
     /**
+     * @param string $command
+     */
+    public function setPostProcess(string $command)
+    {
+        $this->postProcess = $command;
+    }
+
+    /**
      * @param Host[] $hosts
      */
     public function setHosts(array $hosts)
@@ -58,7 +66,7 @@ class User
                 $host->hostname = $hostname;
             }
 
-            $this->hosts[] = $host;
+            $this->hosts[$host->hostname] = $host;
         }
     }
 }

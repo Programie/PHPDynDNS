@@ -37,7 +37,7 @@ class Config
                 $user->username = $username;
             }
 
-            $this->users[] = $user;
+            $this->users[$user->username] = $user;
         }
     }
 }
