@@ -3,7 +3,7 @@
     "ttl": 60,
     "users": {
         "myuser": {
-            "password_hash": "$5$1IekWfmq$yVTjQcWsX/qK.TIws0NWAj0mmlyDFsSMw6nSFYHcyH8",
+            "password_hash": "$5$qS83kPfObw5$hOL2P9IwOdGXOIhyoy3hir5KN4YT7x2gauQMHSOHxv2",
             "hosts": {
                 "myhost.example.com": {
                     "zone": "example.com"
