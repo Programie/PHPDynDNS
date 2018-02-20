@@ -5,14 +5,12 @@ class User
 {
     /**
      * @var string
-     * @required
      */
     public $username;
     /**
      * @var string
-     * @required
      */
-    public $passwordHash;
+    private $passwordHash;
     /**
      * @var Host[]
      * @required
@@ -39,5 +37,28 @@ class User
     public function getHost(string $hostname)
     {
         return $this->hosts[$hostname] ?? null;
+    }
+
+    /**
+     * @param string $hash
+     * @required
+     */
+    public function setPasswordHash(string $hash)
+    {
+        $this->passwordHash = $hash;
+    }
+
+    /**
+     * @param Host[] $hosts
+     */
+    public function setHosts(array $hosts)
+    {
+        foreach ($hosts as $hostname => $host) {
+            if ($host->hostname === null) {
+                $host->hostname = $hostname;
+            }
+
+            $this->hosts[] = $host;
+        }
     }
 }

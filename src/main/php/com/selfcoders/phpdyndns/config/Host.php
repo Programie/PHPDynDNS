@@ -5,7 +5,6 @@ class Host
 {
     /**
      * @var string
-     * @required
      */
     public $hostname;
     /**

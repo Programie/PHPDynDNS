@@ -26,4 +26,18 @@ class Config
     {
         return $this->users[$username] ?? null;
     }
+
+    /**
+     * @param User[] $users
+     */
+    public function setUsers(array $users)
+    {
+        foreach ($users as $username => $user) {
+            if ($user->username === null) {
+                $user->username = $username;
+            }
+
+            $this->users[] = $user;
+        }
+    }
 }
