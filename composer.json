@@ -1,0 +1,14 @@
+{
+    "name": "programie/phpdyndns",
+    "description": "A simple DynDNS Service written in PHP",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Wieland",
+            "email": "git@selfcoders.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
