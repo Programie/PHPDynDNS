@@ -8,4 +8,4 @@ script:
   - mkdir -p build/logs
   - phpunit --coverage-clover build/logs/clover.xml
 after_script:
-  - php vendor/satooshi/php-coveralls/bin/coveralls -v
+  - php vendor/bin/php-coveralls -v
