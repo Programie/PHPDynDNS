@@ -15,6 +15,8 @@ if (!file_exists($configFile)) {
 
 try {
     $mapper = new JsonMapper;
+    $mapper->bExceptionOnMissingData = true;
+    $mapper->bStrictObjectTypeChecking = true;
     /**
      * @var $config Config
      */
