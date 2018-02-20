@@ -3,4 +3,10 @@
     <testsuite>
         <directory>src/test/php</directory>
     </testsuite>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/main/php</directory>
+        </whitelist>
+    </filter>
 </phpunit>
