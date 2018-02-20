@@ -1,9 +1,8 @@
 <?php
-require_once __DIR__ . "/classes/Config.php";
-require_once __DIR__ . "/classes/ConfigException.php";
-require_once __DIR__ . "/classes/Host.php";
-require_once __DIR__ . "/classes/NSUpdate.php";
-require_once __DIR__ . "/classes/User.php";
+use com\selfcoders\phpdyndns\config\Config;
+use com\selfcoders\phpdyndns\NSUpdate;
+
+require_once __DIR__ . "/vendor/autoload.php";
 
 // Standard error codes (As used by dyn.com)
 define("ERROR_OK", "good");// The update was successful, and the hostname is now updated
@@ -24,14 +23,20 @@ if (!file_exists($configFile)) {
 }
 
 try {
-    $config = Config::fromFile($configFile);
-} catch (ConfigException $exception) {
+    $mapper = new JsonMapper;
+    /**
+     * @var $config Config
+     */
+    $config = $mapper->map(json_decode(file_get_contents($configFile)), new Config);
+} catch (JsonMapper_Exception $exception) {
     error_log($exception);
 
     header("HTTP/1.1 500 Internal Server Error");
     echo "An error occurred while parsing configuration (see error log)!";
     exit;
 }
+
+var_dump($config);
 
 // Allow Icinga/Nagios to check this application
 if (preg_match("/^check_http/", $_SERVER["HTTP_USER_AGENT"])) {

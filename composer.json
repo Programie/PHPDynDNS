@@ -9,6 +9,13 @@
             "email": "git@selfcoders.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "": "src/main/php"
+        }
+    },
     "minimum-stability": "stable",
-    "require": {}
+    "require": {
+        "netresearch/jsonmapper": "^1.4"
+    }
 }

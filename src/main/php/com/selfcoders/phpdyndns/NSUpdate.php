@@ -1,4 +1,5 @@
 <?php
+namespace com\selfcoders\phpdyndns;
 
 class NSUpdate
 {
