@@ -32,7 +32,7 @@ Directly cloning the repository requires you to download the required dependenci
 Once downloaded, continue with the following steps:
 
 * Copy *config.sample.json* to *config.json*
-* Edit config.json to fit your needs
+* Edit config.json to fit your needs (the `password_hash` can be generated with tools like "mkpasswd", e.g. `mkpasswd -m sha-256`)
 * Configure your DNS server to allow update requests from the webserver (e.g. `allow-update { localhost; }` in bind)
 * Configure your router to automatically request the URL of your DynDNS service after each reconnect (or create a cronjob with curl/wget).
 
