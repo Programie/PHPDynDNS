@@ -1,0 +1,12 @@
+language: php
+php:
+  - 7.0
+  - 7.1
+  - 7.2
+install:
+  - composer install
+script:
+  - mkdir -p build/logs
+  - phpunit --coverage-clover build/logs/clover.xml
+after_script:
+  - php vendor/satooshi/php-coveralls/bin/coveralls -v
