@@ -1,7 +1,7 @@
 # PHP DynDNS
 
-[![Build Status](https://travis-ci.org/Programie/PHPDynDNS.svg)](https://travis-ci.org/Programie/PHPDynDNS)
-[![Coverage Status](https://coveralls.io/repos/github/Programie/PHPDynDNS/badge.svg?branch=master)](https://coveralls.io/github/Programie/PHPDynDNS?branch=master)
+[![pipeline status](https://gitlab.com/Programie/PHPDynDNS/badges/master/pipeline.svg)](https://gitlab.com/Programie/PHPDynDNS/commits/master)
+[![coverage report](https://gitlab.com/Programie/PHPDynDNS/badges/master/coverage.svg)](https://gitlab.com/Programie/PHPDynDNS/commits/master)
 ## Introduction
 
 PHP DynDNS is a very simple DynDNS service. It allows you to update your DNS server via a simple HTTP request.
