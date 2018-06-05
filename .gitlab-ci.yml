@@ -1,0 +1,21 @@
+cache:
+  paths:
+  - vendor/
+
+before_script:
+- apt-get update -yqq
+- apt-get install git -yqq
+- pecl install xdebug
+- docker-php-ext-enable xdebug
+- curl -sS https://getcomposer.org/installer | php
+- php composer.phar install
+
+test:7.1:
+  image: php:7.1
+  script:
+  - vendor/bin/phpunit --coverage-text --colors=never
+
+test:7.2:
+  image: php:7.2
+  script:
+  - vendor/bin/phpunit --coverage-text --colors=never
