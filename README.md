@@ -24,7 +24,7 @@ PHP DynDNS also supports IPv6! To update both, the IPv4 and IPv6 address, just m
 
 There are two methods for getting the latest release:
 
-* (recommended) Download the [latest release](https://github.com/Programie/PHPDynDNS/releases/latest) and extract it to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
+* (recommended) Download the [latest release](https://gitlab.com/Programie/PHPDynDNS/tags) and extract it to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
 * Clone this repository to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
 
 Directly cloning the repository requires you to download the required dependencies using [Composer](https://getcomposer.org): `composer install`
@@ -32,9 +32,9 @@ Directly cloning the repository requires you to download the required dependenci
 Once downloaded, continue with the following steps:
 
 * Copy *config.sample.json* to *config.json*
-* Edit config.json to fit your needs (see [wiki](https://github.com/Programie/PHPDynDNS/wiki/Configuration) for details)
+* Edit config.json to fit your needs (see [wiki](https://gitlab.com/Programie/PHPDynDNS/wikis/Configuration) for details)
 * Configure your DNS server to allow update requests from the webserver (e.g. `allow-update { localhost; }` in bind)
-* [Configure your router](https://github.com/Programie/PHPDynDNS/wiki/Configure-your-router) to automatically request the URL of your DynDNS service after each reconnect (or create a cronjob with curl/wget).
+* [Configure your router](https://gitlab.com/Programie/PHPDynDNS/wikis/Configure-your-router) to automatically request the URL of your DynDNS service after each reconnect (or create a cronjob with curl/wget).
 
 ## Important
 
