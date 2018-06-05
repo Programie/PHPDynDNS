@@ -4,7 +4,7 @@ cache:
 
 before_script:
 - apt-get update -yqq
-- apt-get install -yqq git unzip
+- apt-get install -yqq git unzip zlib1g-dev
 - docker-php-ext-install zip
 - pecl install xdebug
 - docker-php-ext-enable xdebug
