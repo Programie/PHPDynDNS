@@ -4,7 +4,8 @@ cache:
 
 before_script:
 - apt-get update -yqq
-- apt-get install git -yqq
+- apt-get install -yqq git unzip
+- docker-php-ext-install zip
 - pecl install xdebug
 - docker-php-ext-enable xdebug
 - curl -sS https://getcomposer.org/installer | php
