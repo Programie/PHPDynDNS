@@ -12,6 +12,10 @@ RUN composer install --no-dev --ignore-platform-reqs && \
 
 FROM php:apache
 
+RUN apt-get update && \
+    apt-get install -y dnsutils && \
+    rm -rf /var/lib/apt/lists/*
+
 ENV APACHE_DOCUMENT_ROOT /app
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
