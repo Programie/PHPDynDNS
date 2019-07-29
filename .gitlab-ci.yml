@@ -19,4 +19,9 @@ test:7.1:
 test:7.2:
   image: php:7.2
   script:
-  - vendor/bin/phpunit --coverage-text --colors=never
+    - vendor/bin/phpunit --coverage-text --colors=never
+
+test:7.3:
+  image: php:7.3
+  script:
+    - vendor/bin/phpunit --coverage-text --colors=never
