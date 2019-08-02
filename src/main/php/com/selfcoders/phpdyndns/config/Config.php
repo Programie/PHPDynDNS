@@ -44,4 +44,9 @@ class Config
             $this->users[$user->username] = $user;
         }
     }
+
+    public function setNsupdateOptions(string $options)
+    {
+        $this->nsupdateOptions = $options;
+    }
 }
