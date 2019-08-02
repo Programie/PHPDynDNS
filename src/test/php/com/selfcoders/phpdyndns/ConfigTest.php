@@ -18,7 +18,7 @@ class ConfigTest extends TestCase
     /**
      * @throws JsonMapper_Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         $configFile = __DIR__ . "/../../../../../../config.sample.json";
 
@@ -29,7 +29,7 @@ class ConfigTest extends TestCase
         $this->config = $mapper->map(json_decode(file_get_contents($configFile)), new Config);
     }
 
-    public function testConfig()
+    public function testConfig(): void
     {
         $this->assertInstanceOf(Config::class, $this->config);
 

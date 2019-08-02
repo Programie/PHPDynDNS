@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class NSUpdateTest extends TestCase
 {
-    public function testGetAllCommands()
+    public function testGetAllCommands(): void
     {
         $nsUpdate = new NSUpdate("some.host", "my.zone", "");
 
