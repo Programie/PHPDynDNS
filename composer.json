@@ -16,7 +16,8 @@
     },
     "minimum-stability": "stable",
     "require": {
-        "netresearch/jsonmapper": "^1.4"
+        "netresearch/jsonmapper": "^1.4",
+        "ext-json": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.0",
