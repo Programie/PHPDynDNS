@@ -11,11 +11,6 @@ before_script:
 - curl -sS https://getcomposer.org/installer | php
 - php composer.phar install
 
-test:7.1:
-  image: php:7.1
-  script:
-  - vendor/bin/phpunit --coverage-text --colors=never
-
 test:7.2:
   image: php:7.2
   script:
