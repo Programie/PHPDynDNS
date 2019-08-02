@@ -16,6 +16,7 @@
     },
     "minimum-stability": "stable",
     "require": {
+        "php": ">=7.1",
         "netresearch/jsonmapper": "^1.5",
         "ext-json": "*"
     },

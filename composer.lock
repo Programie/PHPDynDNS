@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "58dfffa3dd182113121270769ef50017",
+    "content-hash": "56e008245715d213cc45449af655f837",
     "packages": [
         {
             "name": "netresearch/jsonmapper",
@@ -2506,6 +2506,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
+        "php": ">=7.1",
         "ext-json": "*"
     },
     "platform-dev": []
