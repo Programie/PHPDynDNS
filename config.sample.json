@@ -1,6 +1,7 @@
 {
     "server": "localhost",
     "ttl": 60,
+    "nsupdateOptions": "",
     "users": {
         "myuser": {
             "password_hash": "$5$qS83kPfObw5$hOL2P9IwOdGXOIhyoy3hir5KN4YT7x2gauQMHSOHxv2",

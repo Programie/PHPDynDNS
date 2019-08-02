@@ -17,6 +17,10 @@ class Config
      * @required
      */
     public $users = [];
+    /**
+     * @var string
+     */
+    public $nsupdateOptions = "";
 
     /**
      * @param string $username

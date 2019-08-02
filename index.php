@@ -84,7 +84,7 @@ if (preg_match("/^\d{1,3}(\.\d{1,3}){3,3}$/", $ipAddress)) {
     $entryType = "AAAA";
 }
 
-$nsUpdate = new NSUpdate($config->server, $host->zone);
+$nsUpdate = new NSUpdate($config->server, $host->zone, $config->nsupdateOptions);
 
 $nsUpdate->delete($host->hostname, $entryType);
 $nsUpdate->add($host->hostname, $config->ttl, $entryType, $ipAddress);

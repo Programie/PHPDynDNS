@@ -12,6 +12,10 @@ class NSUpdate
      */
     private $zone;
     /**
+     * @var string
+     */
+    private $options;
+    /**
      * @var string[]
      */
     private $commands = [];
@@ -19,11 +23,13 @@ class NSUpdate
     /**
      * @param string $server
      * @param string $zone
+     * @param string $options
      */
-    public function __construct(string $server, string $zone)
+    public function __construct(string $server, string $zone, string $options)
     {
         $this->server = $server;
         $this->zone = $zone;
+        $this->options = $options;
     }
 
     /**
@@ -65,7 +71,13 @@ class NSUpdate
      */
     public function send()
     {
-        exec(sprintf("echo \"%s\" | nsupdate", implode("\n", $this->getAllCommands())), $output, $exitCode);
+        $nsUpdateCommand = "nsupdate";
+
+        if ($this->options !== "") {
+            $nsUpdateCommand .= " " . $this->options;
+        }
+
+        exec(sprintf("echo \"%s\" | %s", implode("\n", $this->getAllCommands()), escapeshellcmd($nsUpdateCommand)), $output, $exitCode);
 
         $this->commands = [];
 

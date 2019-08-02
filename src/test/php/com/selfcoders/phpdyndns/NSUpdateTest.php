@@ -7,7 +7,7 @@ class NSUpdateTest extends TestCase
 {
     public function testGetAllCommands()
     {
-        $nsUpdate = new NSUpdate("some.host", "my.zone");
+        $nsUpdate = new NSUpdate("some.host", "my.zone", "");
 
         $nsUpdate->delete("*.entry.my.zone", "CNAME");
         $nsUpdate->delete("entry.my.zone", "A");
