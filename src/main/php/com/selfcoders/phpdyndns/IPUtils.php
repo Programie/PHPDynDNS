@@ -5,8 +5,8 @@ class IPUtils
 {
     public static function getClientIP($trustedProxies = [])
     {
-        if (isset($_SERVER["X_FORWARDED_FOR"]) and in_array($_SERVER["REMOTE_ADDR"], $trustedProxies)) {
-            $ips = explode(",", $_SERVER["X_FORWARDED_FOR"]);
+        if (isset($_SERVER["HTTP_X_FORWARDED_FOR"]) and in_array($_SERVER["REMOTE_ADDR"], $trustedProxies)) {
+            $ips = explode(",", $_SERVER["HTTP_X_FORWARDED_FOR"]);
             return trim(end($ips));
         }
 
