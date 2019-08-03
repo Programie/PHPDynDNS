@@ -1,6 +1,7 @@
 <?php
 use com\selfcoders\phpdyndns\config\Config;
 use com\selfcoders\phpdyndns\ErrorCode;
+use com\selfcoders\phpdyndns\IPUtils;
 use com\selfcoders\phpdyndns\NSUpdate;
 
 require_once __DIR__ . "/vendor/autoload.php";
@@ -38,7 +39,7 @@ if (preg_match("/^check_http/", $_SERVER["HTTP_USER_AGENT"])) {
 $username = $_GET["username"] ?? $_SERVER["PHP_AUTH_USER"] ?? null;
 $password = $_GET["password"] ?? $_SERVER["PHP_AUTH_PW"] ?? null;
 $hostname = $_GET["hostname"] ?? null;
-$ipAddress = $_GET["ipaddress"] ?? $_SERVER["REMOTE_ADDR"];
+$ipAddress = $_GET["ipaddress"] ?? IPUtils::getClientIP($config->trustedProxies);
 
 if ($username === null or $password === null) {
     header("WWW-Authenticate: Basic realm=\"DynDNS Update\"");

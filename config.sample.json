@@ -2,6 +2,7 @@
     "server": "localhost",
     "ttl": 60,
     "nsupdate_options": "-k /path/to/keyfile",
+    "trusted_proxies": ["172.18.0.2"],
     "users": {
         "myuser": {
             "password_hash": "$5$qS83kPfObw5$hOL2P9IwOdGXOIhyoy3hir5KN4YT7x2gauQMHSOHxv2",

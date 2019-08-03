@@ -21,6 +21,10 @@ class Config
      * @var string
      */
     public $nsupdateOptions = "";
+    /**
+     * @var string[]
+     */
+    public $trustedProxies = [];
 
     /**
      * @param string $username
@@ -45,8 +49,19 @@ class Config
         }
     }
 
+    /**
+     * @param string $options
+     */
     public function setNsupdateOptions(string $options)
     {
         $this->nsupdateOptions = $options;
+    }
+
+    /**
+     * @param string[] $ips
+     */
+    public function setTrustedProxies(array $ips)
+    {
+        $this->trustedProxies = $ips;
     }
 }

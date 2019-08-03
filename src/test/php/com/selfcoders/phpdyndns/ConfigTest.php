@@ -36,6 +36,7 @@ class ConfigTest extends TestCase
         $this->assertEquals("localhost", $this->config->server);
         $this->assertEquals(60, $this->config->ttl);
         $this->assertEquals("-k /path/to/keyfile", $this->config->nsupdateOptions);
+        $this->assertEquals(["172.18.0.2"], $this->config->trustedProxies);
 
         $user = $this->config->getUser("myuser");
 
