@@ -20,6 +20,8 @@ PHP DynDNS also supports IPv6! To update both, the IPv4 and IPv6 address, just m
    * A web server running PHP 7.2 or newer
    * A DNS server (e.g. bind)
 
+Or use the ready to run Docker image (see section "Installation using Docker")
+
 ## Installation
 
 There are two methods for getting the latest release:
@@ -35,6 +37,18 @@ Once downloaded, continue with the following steps:
 * Edit config.json to fit your needs (see [wiki](https://gitlab.com/Programie/PHPDynDNS/wikis/Configuration) for details)
 * Configure your DNS server to allow update requests from the webserver (e.g. `allow-update { localhost; }` in bind)
 * [Configure your router](https://gitlab.com/Programie/PHPDynDNS/wikis/Configure-your-router) to automatically request the URL of your DynDNS service after each reconnect (or create a cronjob with curl/wget).
+
+## Installation using Docker
+
+PHPDynDNS is also provided as a Docker image. Just pull it from [Docker Hub](https://hub.docker.com/r/programie/phpdyndns).
+
+Mount your config.json to */app/config.json*
+
+Example command to start the container:
+
+```
+docker run -d --name phpdyndns -p 80:80 -v /path/to/config.json:/app/config.json:ro programie/phpdyndns
+```
 
 ## Important
 
