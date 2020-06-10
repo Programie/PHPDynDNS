@@ -14,7 +14,7 @@
                     "zone": "anotherhost.example.com"
                 }
             },
-            "post_process": "nohup sudo /opt/some-script.sh %hostname% %ipaddress% %entrytype%"
+            "post_process": "nohup sudo /opt/some-script.sh %hostname% %ipv4address%"
         }
     }
 }

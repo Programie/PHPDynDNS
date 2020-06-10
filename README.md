@@ -10,9 +10,13 @@ Authorization is done using HTTP Basic Auth or using the *username* and *passwor
 
 The full URL looks like *https://dyndns.example.com/?hostname=myhost.example.com* (HTTP Basic Auth) or *https://dyndns.example.com/?hostname=myhost.example.com&username=myuser&password=mypassword* (URL variable auth).
 
-You may also specify the IP address using a GET variable (ipaddress=your.ip.address.here). Example: *https://dyndns.example.com/?hostname=myhost.example.com&ipaddress=79.206.99.18* or *https://dyndns.example.com/?hostname=myhost.example.com&ipaddress=2003:66:ef5d:9300:5899:991b:8542:b19f*
+You may also specify the IPv4 and IPv6 address using GET variables (myip=your.ipv4.address.here and myipv6=your:ipv6:address:here).
 
-PHP DynDNS also supports IPv6! To update both, the IPv4 and IPv6 address, just make two requests (one with the IPv4 and one with the IPv6 address).
+Examples:
+
+* IPv4 only: https://dyndns.example.com/?hostname=myhost.example.com&myip=79.206.99.18
+* IPv6 only: https://dyndns.example.com/?hostname=myhost.example.com&myipv6=2003:66:ef5d:9300:5899:991b:8542:b19f
+* IPv4 + IPv6: https://dyndns.example.com/?hostname=myhost.example.com&myip=79.206.99.18&myipv6=2003:66:ef5d:9300:5899:991b:8542:b19f
 
 ## Requirements
 

@@ -39,7 +39,8 @@ if (preg_match("/^check_http/", $_SERVER["HTTP_USER_AGENT"])) {
 $username = $_GET["username"] ?? $_SERVER["PHP_AUTH_USER"] ?? null;
 $password = $_GET["password"] ?? $_SERVER["PHP_AUTH_PW"] ?? null;
 $hostname = $_GET["hostname"] ?? null;
-$ipAddress = $_GET["ipaddress"] ?? IPUtils::getClientIP($config->trustedProxies);
+$ipV4Address = $_GET["myip"] ?? null;
+$ipV6Address = $_GET["myipv6"] ?? null;
 
 if ($username === null or $password === null) {
     header("WWW-Authenticate: Basic realm=\"DynDNS Update\"");
@@ -71,24 +72,47 @@ if ($host === null) {
     exit;
 }
 
-// Check whether the given IP address is valid
-if (!$ipAddress or !filter_var($ipAddress, FILTER_VALIDATE_IP)) {
+$clientIP = IPUtils::getClientIP($config->trustedProxies);
+
+if (!$ipV4Address and filter_var($clientIP, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+    // Use client IP address if no IPv4 given
+    $ipV4Address = $clientIP;
+} elseif (!$ipV6Address and filter_var($clientIP, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+    // Use client IP address if no IPv6 given
+    $ipV6Address = $clientIP;
+}
+
+if (!$ipV4Address and !$ipV6Address) {
     header("HTTP/1.1 400 Bad Request");
     echo ErrorCode::INVALID_IP;
     exit;
 }
 
-// Is IPv4 address?
-if (preg_match("/^\d{1,3}(\.\d{1,3}){3,3}$/", $ipAddress)) {
-    $entryType = "A";
-} else {
-    $entryType = "AAAA";
+// Check whether the given IPv4 address is valid
+if ($ipV4Address and !filter_var($ipV4Address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+    header("HTTP/1.1 400 Bad Request");
+    echo ErrorCode::INVALID_IP;
+    exit;
+}
+
+// Check whether the given IPv6 address is valid
+if ($ipV6Address and !filter_var($ipV6Address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+    header("HTTP/1.1 400 Bad Request");
+    echo ErrorCode::INVALID_IP;
+    exit;
 }
 
 $nsUpdate = new NSUpdate($config->server, $host->zone, $config->nsupdateOptions);
 
-$nsUpdate->delete($host->hostname, $entryType);
-$nsUpdate->add($host->hostname, $config->ttl, $entryType, $ipAddress);
+if ($ipV4Address) {
+    $nsUpdate->delete($host->hostname, "A");
+    $nsUpdate->add($host->hostname, $config->ttl, "A", $ipV4Address);
+}
+
+if ($ipV6Address) {
+    $nsUpdate->delete($host->hostname, "AAAA");
+    $nsUpdate->add($host->hostname, $config->ttl, "AAAA", $ipV6Address);
+}
 
 if (!$nsUpdate->send()) {
     echo ErrorCode::DNSERROR;
@@ -100,10 +124,20 @@ if (isset($user->postProcess)) {
     $commandLine = $user->postProcess;
     $commandLine = str_replace("%username%", $user->username, $commandLine);
     $commandLine = str_replace("%hostname%", $host->hostname, $commandLine);
-    $commandLine = str_replace("%ipaddress%", $ipAddress, $commandLine);
-    $commandLine = str_replace("%entrytype%", $entryType, $commandLine);
+    $commandLine = str_replace("%ipv4address%", $ipV4Address, $commandLine);
+    $commandLine = str_replace("%ipv6address%", $ipV6Address, $commandLine);
 
     exec($commandLine);
 }
 
-echo ErrorCode::OK . " " . $ipAddress;
+$response = [];
+
+if ($ipV4Address) {
+    $response[] = $ipV4Address;
+}
+
+if ($ipV6Address) {
+    $response[] = $ipV6Address;
+}
+
+echo ErrorCode::OK . " " . implode(" ", $response);
