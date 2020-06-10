@@ -21,5 +21,16 @@ services:
       - ./src/test/resources/bind/named.conf:/etc/bind/named.conf:ro
       - ./src/test/resources/bind/example.com.db:/tmp/example.com.db
 
+  sut:
+    build: ./src/test/resources/sut
+    command: /run-tests.sh
+    depends_on:
+      - app
+      - bind
+    networks:
+      - containers
+    volumes:
+      - ./run-tests.sh:/run-tests.sh:ro
+
 networks:
   containers:
