@@ -43,7 +43,7 @@ class ConfigTest extends TestCase
         $this->assertInstanceOf(User::class, $user);
         $this->assertEquals("myuser", $user->username);
         $this->assertTrue($user->checkPassword("mypassword"));
-        $this->assertEquals("nohup sudo /opt/some-script.sh %hostname% %ipaddress% %entrytype%", $user->postProcess);
+        $this->assertEquals("nohup sudo /opt/some-script.sh %hostname% %ipv4address%", $user->postProcess);
 
         $host = $user->getHost("myhost.example.com");
 
