@@ -72,14 +72,16 @@ if ($host === null) {
     exit;
 }
 
-$clientIP = IPUtils::getClientIP($config->trustedProxies);
+if (!$ipV4Address and !$ipV6Address) {
+    $clientIP = IPUtils::getClientIP($config->trustedProxies);
 
-if (!$ipV4Address and filter_var($clientIP, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-    // Use client IP address if no IPv4 given
-    $ipV4Address = $clientIP;
-} elseif (!$ipV6Address and filter_var($clientIP, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-    // Use client IP address if no IPv6 given
-    $ipV6Address = $clientIP;
+    if (filter_var($clientIP, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        // Use client IP address if no IPv4 given
+        $ipV4Address = $clientIP;
+    } elseif (filter_var($clientIP, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        // Use client IP address if no IPv6 given
+        $ipV6Address = $clientIP;
+    }
 }
 
 if (!$ipV4Address and !$ipV6Address) {
