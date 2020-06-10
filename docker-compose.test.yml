@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  app:
+    image: programie/phpdyndns
+    build: .
+    ports:
+      - "8080:80"
+    networks:
+      - containers
+    volumes:
+      - ./src/test/resources/config.json:/app/config.json:ro
+
+  bind:
+    image: registry.gitlab.com/programie/dockerimages/bind
+    ports:
+      - "15353:53/udp"
+    networks:
+      - containers
+    volumes:
+      - ./src/test/resources/bind/named.conf:/etc/bind/named.conf:ro
+      - ./src/test/resources/bind/example.com.db:/tmp/example.com.db
+
+networks:
+  containers:

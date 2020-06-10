@@ -1,0 +1,5 @@
+$TTL 60
+example.com. IN SOA ns.example.com. hostmaster.example.com. ( 2020010100 3h 30m 1w 1d )
+    IN NS ns.example.com.
+    IN A 0.0.0.0
+ns  IN A 127.0.0.1
