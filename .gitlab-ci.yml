@@ -1,22 +1,43 @@
 cache:
   paths:
-  - vendor/
+    - vendor/
 
 before_script:
-- apt-get update -yqq
-- apt-get install -yqq git libzip-dev unzip zlib1g-dev
-- docker-php-ext-install zip
-- pecl install xdebug
-- docker-php-ext-enable xdebug
-- curl -sS https://getcomposer.org/installer | php
-- php composer.phar install
+  - apt-get update -yqq
+  - apt-get install -yqq git libzip-dev unzip zlib1g-dev
+  - docker-php-ext-install zip
+  - pecl install xdebug
+  - docker-php-ext-enable xdebug
+  - curl -sS https://getcomposer.org/installer | php
+  - php composer.phar install
 
 test:7.2:
+  stage: test
   image: php:7.2
   script:
     - vendor/bin/phpunit --coverage-text --colors=never
 
 test:7.3:
+  stage: test
   image: php:7.3
   script:
     - vendor/bin/phpunit --coverage-text --colors=never
+
+release:
+  stage: deploy
+  image: php:7.3
+  script: "true"
+  dependencies:
+    - test:7.2
+    - test:7.3
+  artifacts:
+    paths:
+      - src/main
+      - vendor
+      - .htaccess
+      - config.sample.json
+      - index.php
+      - LICENSE
+      - README.md
+  only:
+    - tags
