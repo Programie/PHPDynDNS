@@ -38,9 +38,9 @@ Directly cloning the repository requires you to download the required dependenci
 Once downloaded, continue with the following steps:
 
 * Copy *config.sample.json* to *config.json*
-* Edit config.json to fit your needs (see [wiki](https://gitlab.com/Programie/PHPDynDNS/wikis/Configuration) for details)
+* Edit config.json to fit your needs (see [Configuration section](#configuration) bellow for details)
 * Configure your DNS server to allow update requests from the webserver (e.g. `allow-update { localhost; }` in bind)
-* [Configure your router](https://gitlab.com/Programie/PHPDynDNS/wikis/Configure-your-router) to automatically request the URL of your DynDNS service after each reconnect (or create a cronjob with curl/wget).
+* [Configure your router](#configure-your-router) to automatically request the URL of your DynDNS service after each reconnect (or create a cronjob with curl/wget).
 
 ## Installation using Docker
 
