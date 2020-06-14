@@ -56,4 +56,119 @@ docker run -d --name phpdyndns -p 80:80 -v /path/to/config.json:/app/config.json
 
 ## Important
 
-   Make sure the config.json is not readable via HTTP! On Apache this is already done using the *.htaccess* file.
+Make sure the config.json is not readable via HTTP! On Apache this is already done using the *.htaccess* file.
+
+## Configuration
+
+The configuration is done using JSON stored in the `config.json` file which looks like the following:
+
+```json
+{
+    "server": "localhost",
+    "ttl": 60,
+    "users": {
+        "myuser": {
+            "password_hash": "$5$1IekWfmq$yVTjQcWsX/qK.TIws0NWAj0mmlyDFsSMw6nSFYHcyH8",
+            "hosts": {
+                "myhost.example.com": {
+                    "zone": "example.com"
+                },
+                "anotherhost.example.com": {
+                    "zone": "anotherhost.example.com"
+                }
+            },
+            "post_process": "nohup sudo /opt/some-script.sh %hostname% %ipv4address%"
+        }
+    }
+}
+```
+
+### Properties
+
+* **server**: The DNS server to connect to (default: `localhost`)
+* **ttl**: The TTL (time to live) for all DNS entries managed by PHPDynDNS (default: `60`)
+* **users**: A map listing all users (the key of each entry is the username)
+   * **password_hash**: The hashed password of the user (e.g. created with `mkpasswd -m sha-256`)
+   * **hosts**: A map listing all hosts this user is able to update (the key of each entry is the hostname to update)
+      * **zone**: The zone which contains this hostname
+   * **post_process**: A command which should be executed after successfully updating the DNS entry (can contain placeholders, see note below)
+
+### Placeholders for post_process option
+
+There are a few placeholders which can be used in the `post_process` option to be replaced on execution.
+
+* **%username%**: The username
+* **%hostname%**: The hostname
+* **%ipv4address%**: The new IPv4 address (if available)
+* **%ipv6address%**: The new IPv6 address (if available)
+
+## Configure your router
+
+### Fritz!Box
+
+* DynDNS Provider: `Custom`
+* Update URL: `https://your.domain/path/to/phpdyndns?username=<username>&password=<pass>&hostname=<domain>&myip=<ipaddr>`
+* Domain: `your.configured.host.of.your.domain`
+* Username: `your configured username`
+* Password: `your configured password`
+
+### Cronjob (crontab)
+
+Use this variant if your router does not support sending updates to (custom) DynDNS services. Every request will cause an update to your DNS zone!
+
+```
+* * * * * curl https://your.domain/path/to/phpdyndns?username=your-username&password=your-password&hostname=your.domain.tld
+```
+This will update your domain `your.domain.tld` every minute.
+
+Replace `your-username`, `your-password` and `your.domain.tld` with your configured username, password and domain.
+
+## Post Processing
+
+PHP DynDNS can trigger user defined commands after the DynDNS hostname has been updated successfully.
+
+A command might be "/opt/reload-iptables.sh" which automatically reloads iptables using the new IP-Address of the DynDNS hostname.
+
+The post processing command can be individually configured for each user in the config.json.
+
+### Example: Dynamic firewall using iptables
+
+PHP DynDNS can execute commands after the hostname has been updated successfully. And such a command might reload your iptables rules from a file which also forces iptables to re-lookup your dynamic hostname.
+
+The post processing script might look like the following:
+
+```sh
+#! /bin/sh
+/sbin/iptables-restore < /path/to/your/iptables.rules
+```
+
+The iptables.rules might look like the following:
+
+```
+*filter
+
+# Set defaults
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Allow already established connections
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Allow local connections
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+-A FORWARD -i lo -o lo -j ACCEPT
+
+# Allow HTTP
+-A INPUT -p tcp --dport 80 -j ACCEPT
+
+# DynDNS
+-A INPUT -p tcp --dport 22 -s yourhost.example.com -j ACCEPT
+
+COMMIT
+```
+
+**Note:** You have to call the script with root permissions (e.g. sudo)! Simply allow the user running the webserver (e.g. www-data) to execute the script as root (e.g. add *www-data ALL=(ALL) NOPASSWD:/opt/scripts/update_dyndns_iptables.sh* to your /etc/sudoers file).
