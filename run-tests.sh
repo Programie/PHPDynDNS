@@ -12,6 +12,8 @@ function test_record()
     fi
 }
 
+printf "server bind\nzone example.com\nupdate delete myhost.example.com A\nupdate delete myhost.example.com AAAA\nsend" | nsupdate
+
 curl -s "http://app/?hostname=myhost.example.com&myip=1.2.3.4" -u myuser:mypassword
 test_record A "1.2.3.4"
 test_record AAAA ""
