@@ -11,25 +11,25 @@ before_script:
   - curl -sS https://getcomposer.org/installer | php
   - php composer.phar install
 
-test:7.2:
-  stage: test
-  image: php:7.2
-  script:
-    - vendor/bin/phpunit --coverage-text --colors=never
-
 test:7.3:
   stage: test
   image: php:7.3
   script:
     - vendor/bin/phpunit --coverage-text --colors=never
 
+test:7.4:
+  stage: test
+  image: php:7.4
+  script:
+    - vendor/bin/phpunit --coverage-text --colors=never
+
 release:
   stage: deploy
-  image: php:7.3
+  image: php:7.4
   script: "true"
   dependencies:
-    - test:7.2
     - test:7.3
+    - test:7.4
   artifacts:
     paths:
       - src/main
