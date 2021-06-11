@@ -4,7 +4,7 @@ cache:
 
 stages:
   - test
-  - deploy
+  - build
   - build_image
   - push_image
 
@@ -32,9 +32,9 @@ test:7.4:
   extends: .tests
   image: php:7.4
 
-release:
+build_package:
   extends: .php_build_install
-  stage: deploy
+  stage: build
   image: php:7.4
   script: php composer.phar install --no-dev
   dependencies:
@@ -49,14 +49,12 @@ release:
       - index.php
       - LICENSE
       - README.md
-  only:
-    - tags
 
 Docker Build:
+  image: docker:18
   stage: build_image
   dependencies:
-  - test:7.3
-  - test:7.4
+  - build_package
   script:
     - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
     # fetches the latest image (not failing if image is not found)
@@ -78,6 +76,7 @@ Docker Build:
 
 # Here, the goal is to tag the "master" branch as "latest"
 Push Docker latest:
+  image: docker:18
   variables:
     # We are just playing with Docker here.
     # We do not need GitLab to clone the source code.
@@ -99,6 +98,7 @@ Push Docker latest:
 # Finally, the goal here is to Docker tag any Git tag
 # GitLab will start a new pipeline everytime a Git tag is created, which is pretty awesome
 Push Docker tag:
+  image: docker:18
   variables:
     # Again, we do not need the source code here. Just playing with Docker.
     GIT_STRATEGY: none
