@@ -54,6 +54,9 @@ release:
 
 Docker Build:
   stage: build_image
+  dependencies:
+  - test:7.3
+  - test:7.4
   script:
     - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
     # fetches the latest image (not failing if image is not found)
