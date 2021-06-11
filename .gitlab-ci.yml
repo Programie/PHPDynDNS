@@ -2,31 +2,41 @@ cache:
   paths:
     - vendor/
 
-before_script:
-  - apt-get update -yqq
-  - apt-get install -yqq git libzip-dev unzip zlib1g-dev
-  - docker-php-ext-install zip
-  - pecl install xdebug
-  - docker-php-ext-enable xdebug
-  - curl -sS https://getcomposer.org/installer | php
-  - php composer.phar install
+stages:
+  - test
+  - deploy
+  - build_image
+  - push_image
+
+.php_build_install:
+  before_script:
+    - apt-get update -yqq
+    - apt-get install -yqq git libzip-dev unzip zlib1g-dev
+    - docker-php-ext-install zip
+    - pecl install xdebug
+    - docker-php-ext-enable xdebug
+    - curl -sS https://getcomposer.org/installer | php
+
+.tests:
+  extends: .php_build_install
+  stage: test
+  script:
+    - php composer.phar install
+    - vendor/bin/phpunit --coverage-text --colors=never
 
 test:7.3:
-  stage: test
+  extends: .tests
   image: php:7.3
-  script:
-    - vendor/bin/phpunit --coverage-text --colors=never
 
 test:7.4:
-  stage: test
+  extends: .tests
   image: php:7.4
-  script:
-    - vendor/bin/phpunit --coverage-text --colors=never
 
 release:
+  extends: .php_build_install
   stage: deploy
   image: php:7.4
-  script: "true"
+  script: php composer.phar install --no-dev
   dependencies:
     - test:7.3
     - test:7.4
@@ -41,3 +51,60 @@ release:
       - README.md
   only:
     - tags
+
+Docker Build:
+  stage: build_image
+  script:
+    - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    # fetches the latest image (not failing if image is not found)
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    # builds the project and passes vcs vars for LABEL
+    # notice the cache-from, which is going to use the image we just pulled locally
+    # the built image is tagged locally with the commit SHA, and then pushed to
+    # the GitLab registry
+    - >
+      docker build
+      --pull
+      --build-arg VCS_REF=$CI_COMMIT_SHA
+      --build-arg VCS_URL=$CI_PROJECT_URL
+      --cache-from $CI_REGISTRY_IMAGE:latest
+      --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+      .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+
+
+# Here, the goal is to tag the "master" branch as "latest"
+Push Docker latest:
+  variables:
+    # We are just playing with Docker here.
+    # We do not need GitLab to clone the source code.
+    GIT_STRATEGY: none
+  stage: push_image
+  only:
+    # Only "master" should be tagged "latest"
+    - master
+  script:
+    - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    # Because we have no guarantee that this job will be picked up by the same runner
+    # that built the image in the previous step, we pull it again locally
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    # Then we tag it "latest"
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    # Annnd we push it.
+    - docker push $CI_REGISTRY_IMAGE:latest
+
+# Finally, the goal here is to Docker tag any Git tag
+# GitLab will start a new pipeline everytime a Git tag is created, which is pretty awesome
+Push Docker tag:
+  variables:
+    # Again, we do not need the source code here. Just playing with Docker.
+    GIT_STRATEGY: none
+  stage: push_image
+  only:
+    # We want this job to be run on tags only.
+    - tags
+  script:
+    - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
