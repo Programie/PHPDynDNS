@@ -31,22 +31,22 @@ stages:
   before_script:
     - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
 
-test:7.3:
+test:8.0:
   extends: .tests
-  image: php:7.3
+  image: php:8.0
 
-test:7.4:
+test:8.1:
   extends: .tests
-  image: php:7.4
+  image: php:8.1
 
 build_package:
   extends: .php_build_install
   stage: build
-  image: php:7.4
+  image: php:8.1
   script: php composer.phar install --no-dev
   dependencies:
-    - test:7.3
-    - test:7.4
+    - test:8.0
+    - test:8.1
   artifacts:
     paths:
       - src/main

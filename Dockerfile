@@ -10,7 +10,7 @@ RUN composer install --no-dev --ignore-platform-reqs && \
     rm /app/composer.*
 
 
-FROM php:7.4-apache
+FROM php:8.1-apache
 
 RUN apt-get update && \
     apt-get install -y dnsutils && \
