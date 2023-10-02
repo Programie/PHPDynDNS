@@ -31,7 +31,7 @@ Or use the ready to run Docker image (see section "Installation using Docker")
 
 There are two methods for getting the latest release:
 
-* (recommended) Download the [latest release](https://gitlab.com/Programie/PHPDynDNS/tags) and extract it to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
+* (recommended) Download the [latest release](https://github.com/Programie/PHPDynDNS/releases/latest) and extract it to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
 * Clone this repository to your web directory from where you want to serve the files (e.g. /var/www/dyndns)
 
 Directly cloning the repository requires you to download the required dependencies using [Composer](https://getcomposer.org): `composer install`
