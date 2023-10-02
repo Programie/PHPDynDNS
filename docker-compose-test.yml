@@ -12,7 +12,7 @@ services:
       - ./src/test/resources/config.json:/app/config.json:ro
 
   bind:
-    image: registry.gitlab.com/programie/dockerimages/bind
+    image: ghcr.io/programie/dockerimages/bind
     ports:
       - "15353:53/udp"
     networks:
