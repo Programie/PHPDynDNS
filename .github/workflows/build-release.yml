@@ -1,0 +1,14 @@
+name: Build release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    uses: programie/Workflows/.github/workflows/package-zip-release-from-docker.yml@main
+    with:
+      image: programie/phpdyndns
+      path: /app
+      zip_name: PHPDynDNS
