@@ -1,7 +1,8 @@
 # PHP DynDNS
 
-[![pipeline status](https://gitlab.com/Programie/PHPDynDNS/badges/master/pipeline.svg)](https://gitlab.com/Programie/PHPDynDNS/commits/master)
-[![coverage report](https://gitlab.com/Programie/PHPDynDNS/badges/master/coverage.svg)](https://gitlab.com/Programie/PHPDynDNS/commits/master)
+[![DockerHub](https://img.shields.io/badge/download-DockerHub-blue?logo=docker)](https://hub.docker.com/r/programie/phpdyndns)
+[![GitHub release](https://img.shields.io/github/v/release/Programie/PHPDynDNS)](https://github.com/Programie/PHPDynDNS/releases/latest)
+
 ## Introduction
 
 PHP DynDNS is a very simple DynDNS service. It allows you to update your DNS server via a simple HTTP request.
