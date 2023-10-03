@@ -1,4 +1,4 @@
-name: Rebuild latest release
+name: Rebuild Docker image from latest release
 
 on:
   schedule:

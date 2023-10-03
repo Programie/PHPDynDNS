@@ -1,0 +1,22 @@
+name: Build and Release
+
+on: push
+
+permissions:
+  contents: write
+
+jobs:
+  build-docker-image:
+    uses: programie/Workflows/.github/workflows/build-docker-image.yml@main
+    with:
+      image: programie/phpdyndns
+    secrets: inherit
+
+  build-release-package:
+    needs: build-docker-image
+    if: startsWith(github.ref, 'refs/tags/')
+    uses: programie/Workflows/.github/workflows/package-zip-release-from-docker.yml@main
+    with:
+      image: programie/phpdyndns
+      path: /app
+      zip_name: PHPDynDNS
