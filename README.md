@@ -2,6 +2,7 @@
 
 [![DockerHub](https://img.shields.io/badge/download-DockerHub-blue?logo=docker)](https://hub.docker.com/r/programie/phpdyndns)
 [![GitHub release](https://img.shields.io/github/v/release/Programie/PHPDynDNS)](https://github.com/Programie/PHPDynDNS/releases/latest)
+[![codecov](https://codecov.io/gh/Programie/PHPDynDNS/graph/badge.svg?token=IY8OQOYD29)](https://codecov.io/gh/Programie/PHPDynDNS)
 
 ## Introduction
 
