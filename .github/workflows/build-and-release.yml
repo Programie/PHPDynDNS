@@ -19,4 +19,5 @@ jobs:
     with:
       image: programie/phpdyndns
       path: /app
+      additional_files: config.sample.json
       zip_name: PHPDynDNS
