@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.4.0] - 2023-10-08
+
+* Use semantic versioning format
+* Build release using GitHub Actions
+
 ## [3.3] - 2022-05-26
 
 Push image to Docker Hub
