@@ -10,22 +10,15 @@ RUN composer install --no-dev --ignore-platform-reqs && \
     rm /app/composer.*
 
 
-FROM php:8.1-apache
+FROM ghcr.io/programie/dockerimages/php
+
+ENV WEB_ROOT=/app
 
 RUN apt-get update && \
     apt-get install -y dnsutils && \
-    rm -rf /var/lib/apt/lists/*
-
-ENV APACHE_DOCUMENT_ROOT /app
-
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
-    sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf && \
-    echo "ServerTokens Prod" > /etc/apache2/conf-enabled/z-server-tokens.conf && \
-    mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
-RUN a2enmod rewrite
+    install-php 8.1 && \
+    a2enmod rewrite
 
 COPY --from=builder /app /app
 
 WORKDIR /app
-EXPOSE 80
