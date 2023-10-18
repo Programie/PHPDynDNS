@@ -4,10 +4,13 @@ on:
   schedule:
     - cron: '0 0 * * SUN'
 
+permissions:
+  packages: write
+
 jobs:
   build:
     uses: programie/Workflows/.github/workflows/build-docker-image.yml@main
     with:
-      image: programie/phpdyndns
+      dockerhub_image: programie/phpdyndns
       use_latest_release: true
     secrets: inherit
