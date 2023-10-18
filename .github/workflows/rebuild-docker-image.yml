@@ -2,7 +2,7 @@ name: Rebuild Docker image from latest release
 
 on:
   schedule:
-    - cron: '0 0 * * SUN'
+    - cron: '0 10 * * SUN'
 
 permissions:
   packages: write
