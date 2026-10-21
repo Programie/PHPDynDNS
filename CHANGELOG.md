@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.4.1] - 2026-10-21
+
+* Update to PHP 8.2 in Docker image to fix critical PHP vulnerabilities
+
 ## [3.4.0] - 2023-10-08
 
 * Use semantic versioning format
