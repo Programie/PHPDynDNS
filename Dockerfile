@@ -16,7 +16,7 @@ ENV WEB_ROOT=/app
 
 RUN apt-get update && \
     apt-get install -y dnsutils && \
-    install-php 8.1 && \
+    install-php 8.2 && \
     a2enmod rewrite
 
 COPY --from=builder /app /app
